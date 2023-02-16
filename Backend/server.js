@@ -1,21 +1,29 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 const port = 3002;
-const db = require('./db')
-app.get('/books', (request, response) => {
-    response.json(request.body)
-});
-app.use(bodyParser.json())
+const cors = require('cors');
+const db = require('./db');
+app.use(cors());
+app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
     extended: true,
   })
-)
-app.get('/books', db.getUsers);
-app.post('/book', db.createUser);
-app.put('/book/:name', db.updateUser);
-app.delete('/book/:name', db.deleteUser);
+);
+app.get('/login', db.getUsers);
+// app.get('/login', db.getUserById);
+app.post('/sigin', db.createUser);
+// app.put('/login/:email', db.updateUser);
+app.delete('/login/:email', db.deleteUser);
+
+// Blog ApiEndPoint
+
+app.get('/blogs', db.getBlog);
+app.get('/blog', db.getBlogById);
+app.post('/blog', db.createBlog);
+app.put('/blog/:blogid', db.updateBlog);
+app.delete('/blog/:blogid', db.deleteBlog);
 app.listen(port,()=>{
     console.log(`server running at port ${port}`)
 });
