@@ -68,7 +68,7 @@ const getBlog = (request, response) => {
       if (error) {
         throw error
       }
-      response.status(200).json(results.rows)
+      response.status(200).json(results.rows);
     })
 }
   
@@ -112,7 +112,7 @@ const updateBlog = (request, response) => {
 const deleteBlog = (request, response) => {
     const id = request.params.blogid
 
-    pool.query('DELETE FROM blog WHERE blogId = $1', [id], (error, results) => {
+    pool.query('DELETE FROM blog WHERE blogid = $1', [id], (error, results) => {
         if (error) {
         throw error
         }
