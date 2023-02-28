@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import AddBlog from "./components/AddBlogPage";
+import Edit from "./components/Edit";
 import Home from "./components/home";
 import Login from "./components/login";
 
@@ -25,6 +26,11 @@ function App() {
         exact
         path="/Home/AddBlog/:id"
         element={<AddBlog />}
+      />
+      <Route
+        exact
+        path="/Home/:userid/Edit/:id"
+        element={<Edit />}
       />
     </Routes>
   );

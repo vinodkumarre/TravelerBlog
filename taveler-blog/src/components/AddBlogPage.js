@@ -1,16 +1,16 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable no-use-before-define */
 import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
-// import { RMIUploader } from "react-multiple-image-uploader";
-// import SelectPlaces from "react-select-places";
+import ApiFetchCall from "./ApiFetchCall";
 
 const useStyles = makeStyles({
   body: {
     width: "50%",
-    height: "40vw",
+    height: "35vw",
     border: "2px solid",
     margin: "25px auto",
 
@@ -46,58 +46,96 @@ const useStyles = makeStyles({
   headerSub: {
     display: "flex",
     flexWrap: "wrap",
-    gap: "40%",
     width: "100%",
 
   },
   image: {
     display: "flex",
-    flexWrap: "wrap",
     gap: "10px",
     overflow: "scroll",
     height: "40%",
     boxShadow: "0.3em 0.3em 1em rgb(0 0 0 / 30%)",
+    marginLeft: "15px",
+    marginRight: "15px",
 
   },
   singleImage: {
     margin: "10px",
-    width: "100px",
-    height: "100px",
+    width: "40%",
+    height: "90%",
+    boxShadow: "0.3em 0.3em 1em rgb(0 0 0 / 30%)",
 
   },
   loginButton: {
-    margin: "9px !important",
+    marginLeft: "9px !important",
+    marginRight: "9px !important",
     float: "right",
+  },
+  Bottom: {
+    display: "flex",
+    marginTop: "15px",
+    gap: "72%",
+    marginLeft: "15px",
   },
 });
 
 function AddBlog() {
+  const prams = useParams();
+  const navgate = useNavigate();
   const classes = useStyles();
-  const [preImage, setPreImage] = useState();
-  const [loading, setLoading] = useState(false);
+  const [preImage, setPreImage] = useState([]);
+  const [location, setLocation] = useState();
+  const [description, setDescription] = useState();
+  const [site, setSite] = useState();
+  const locationHandler = (e) => {
+    setLocation(e.target.value);
+  };
+  const descriptionHandler = (e) => {
+    setDescription(e.target.value);
+  };
+  const siteHandler = (e) => {
+    setSite(e.target.value);
+  };
 
   const handleImage = (e) => {
-    setLoading(true);
-    const image = [];
-    const privew = [];
-    image.push(e.target.files);
+    const image = [e.target.files];
     for (let i = 0; i < image[0].length; i += 1) {
       const data = new FormData();
       data.append("file", image[0][i]);
       data.append("upload_preset", "sq5otdxh");
       data.append("cloud_name", "dvtyxoaak");
-
-      fetch("https://api.cloudinary.com/v1_1/dvtyxoaak/image/upload", {
+      const promise = fetch("https://api.cloudinary.com/v1_1/dvtyxoaak/image/upload", {
         method: "post",
         body: data,
-      }).then((resp) => resp.json()).then((datas) => {
-        setPreImage(privew);
-        privew.push(datas);
+      }).then((resp) => resp.json());
+      Promise.all([promise]).then((datas) => {
+        setPreImage((prev) => [...prev, datas[0]]);
       });
     }
-    setLoading(false);
   };
-  console.log(preImage);
+  const addBlogHandler = () => {
+    const url = preImage.map((x) => x.url);
+    if (location !== "" && description !== "") {
+      const newUser = {
+        location,
+        photo_upload: url.join(),
+        description,
+        sites_to_visit: site,
+        userid: prams.id,
+      };
+      ApiFetchCall("/blog", "Post", () => {
+        setDescription("");
+        setLocation("");
+        setPreImage("");
+        setSite("");
+      }, JSON.stringify(newUser), {
+        "Content-type": "application/json",
+      });
+    }
+  };
+  const cancelHandler = () => {
+    navgate(`/Home/${prams.id}`);
+  };
   return (
     <div className={classes.body}>
       <div className={classes.header}>
@@ -105,28 +143,36 @@ function AddBlog() {
       </div>
       <div className={classes.headerBody}>
         <div className={classes.headerSub}>
-          <TextField className={classes.TextField} placeholder="Enter Location" />
-          <TextField className={classes.TextField} placeholder="Enter Description" />
-          <input className={classes.TextField} type="file" onChange={handleImage} multiple />
+          <TextField className={classes.TextField} value={location} onChange={locationHandler} placeholder="Enter Location" />
+          <TextField className={classes.TextField} value={description} onChange={descriptionHandler} placeholder="Enter Description" />
+          <TextField className={classes.TextField} value={site} onChange={siteHandler} placeholder="upload url to visit" />
+          <TextField
+            className={classes.TextField}
+            type="file"
+            multiple
+            onChange={handleImage}
+            inputProps={{
+              multiple: true,
+            }}
+          />
         </div>
         <div className={classes.image}>
-          {!loading ? (preImage && preImage.map((img) => (
+          {preImage && preImage.map((im) => (
             <img
               key={Math.random()}
               alt="upload profile"
-              src={img.url}
+              src={im.url}
               className={classes.singleImage}
             />
-          ))) : (
-            <Box className={classes.box}>
-              <CircularProgress />
-            </Box>
-          )}
+          ))}
         </div>
-        <Button className={classes.loginButton} variant="contained">signIn</Button>
-        <Button className={classes.loginButton} variant="contained">signIn</Button>
+        <div className={classes.Bottom}>
+          <Button variant="contained" onClick={cancelHandler}>Cancel</Button>
+          <Button variant="contained" onClick={addBlogHandler}>AddBlog</Button>
+        </div>
       </div>
     </div>
   );
 }
+
 export default AddBlog;
