@@ -77,6 +77,7 @@ function Login() {
       .then((response) => response.json())
       .then((data) => setLogData(data));
   }, []);
+  console.log(logData);
   const handleClick = () => {
     setActive({
       isLogin: false,
