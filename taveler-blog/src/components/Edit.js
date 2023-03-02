@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
@@ -98,6 +97,32 @@ function Edit() {
     };
     ApiFetchCall("/blogs", "Get", reguestSucces);
   }, [prams.id]);
+  const handleLocation = (e) => {
+    setLocation(e.target.value);
+  };
+  const handleDescription = (e) => {
+    setDescription(e.target.value);
+  };
+  const handleSite = (e) => {
+    setSite(e.target.value);
+  };
+  const handleImage = (e) => {
+    const image = [e.target.files];
+    for (let i = 0; i < image[0].length; i += 1) {
+      const data = new FormData();
+      data.append("file", image[0][i]);
+      data.append("upload_preset", "sq5otdxh");
+      data.append("cloud_name", "dvtyxoaak");
+      const promise = fetch("https://api.cloudinary.com/v1_1/dvtyxoaak/image/upload", {
+        method: "post",
+        body: data,
+      }).then((resp) => resp.json());
+      Promise.all([promise]).then((datas) => {
+        setPreImage((prev) => [...prev, datas[0]]);
+      });
+    }
+    console.log(preImage);
+  };
   return (
     <div className={classes.body}>
       <div className={classes.header}>
@@ -105,14 +130,14 @@ function Edit() {
       </div>
       <div className={classes.headerBody}>
         <div className={classes.headerSub}>
-          <TextField className={classes.TextField} value={location} placeholder="Enter Location" />
-          <TextField className={classes.TextField} value={description} placeholder="Enter Description" />
-          <TextField className={classes.TextField} value={site} placeholder="upload url to visit" />
+          <TextField className={classes.TextField} onChange={handleLocation} value={location} placeholder="Enter Location" />
+          <TextField className={classes.TextField} onChange={handleDescription} value={description} placeholder="Enter Description" />
+          <TextField className={classes.TextField} onChange={handleSite} value={site} placeholder="upload url to visit" />
           <TextField
             className={classes.TextField}
             type="file"
             multiple
-            // onChange={handleImage}
+            onChange={handleImage}
             inputProps={{
               multiple: true,
             }}
