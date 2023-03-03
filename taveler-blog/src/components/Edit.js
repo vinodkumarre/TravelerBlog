@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -81,6 +81,7 @@ const useStyles = makeStyles({
 function Edit() {
   const classes = useStyles();
   const prams = useParams();
+  const navgate = useNavigate();
   const [preImage, setPreImage] = useState([]);
   const [location, setLocation] = useState();
   const [description, setDescription] = useState();
@@ -97,6 +98,11 @@ function Edit() {
     };
     ApiFetchCall("/blogs", "Get", reguestSucces);
   }, [prams.id]);
+  console.log(preImage);
+  console.log(description);
+  console.log(location);
+  console.log(site);
+
   const handleLocation = (e) => {
     setLocation(e.target.value);
   };
@@ -108,6 +114,7 @@ function Edit() {
   };
   const handleImage = (e) => {
     const image = [e.target.files];
+    setPreImage([]);
     for (let i = 0; i < image[0].length; i += 1) {
       const data = new FormData();
       data.append("file", image[0][i]);
@@ -118,11 +125,33 @@ function Edit() {
         body: data,
       }).then((resp) => resp.json());
       Promise.all([promise]).then((datas) => {
-        setPreImage((prev) => [...prev, datas[0]]);
+        setPreImage((prev) => [...prev, datas[0].url]);
       });
     }
-    console.log(preImage);
   };
+  const handlerEdit = () => {
+    const url = preImage.map((x) => x);
+    if (location !== "" && description !== "") {
+      const newUser = {
+        location,
+        photo_upload: url.join(),
+        description,
+        sites_to_visit: site,
+        userid: prams.userid,
+      };
+      ApiFetchCall(`/blog/${prams.id}`, "Put", () => {
+        setDescription("");
+        setLocation("");
+        setSite("");
+      }, JSON.stringify(newUser), {
+        "Content-type": "application/json",
+      });
+    }
+  };
+  const handleCancel = () => {
+    navgate(`/Home/${prams.userid}`);
+  };
+
   return (
     <div className={classes.body}>
       <div className={classes.header}>
@@ -154,8 +183,8 @@ function Edit() {
           ))}
         </div>
         <div className={classes.Bottom}>
-          <Button variant="contained">Cancel</Button>
-          <Button variant="contained">EditBlog</Button>
+          <Button variant="contained" onClick={handleCancel}>Cancel</Button>
+          <Button variant="contained" onClick={handlerEdit}>EditBlog</Button>
         </div>
       </div>
     </div>

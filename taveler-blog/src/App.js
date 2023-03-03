@@ -8,6 +8,7 @@ import AddBlog from "./components/AddBlogPage";
 import Edit from "./components/Edit";
 import Home from "./components/home";
 import Login from "./components/login";
+import ViewPage from "./components/viewPage";
 
 function App() {
   return (
@@ -31,6 +32,11 @@ function App() {
         exact
         path="/Home/:userid/Edit/:id"
         element={<Edit />}
+      />
+      <Route
+        exact
+        path="/Home/:userid/ViewPage/:id"
+        element={<ViewPage />}
       />
     </Routes>
   );
