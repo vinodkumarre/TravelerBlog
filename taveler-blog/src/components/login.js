@@ -50,6 +50,30 @@ const useStyle = makeStyles({
     marginLeft: "40px !important",
     marginRight: "20px !important",
   },
+  bottom: {
+    height: "40%",
+    backgroundColor: "antiquewhite",
+    marginTop: "10px",
+  },
+  bottoms: {
+    height: "20%",
+    backgroundColor: "antiquewhite",
+    marginTop: "10px",
+  },
+  bottomH: {
+    marginTop: "0px",
+    marginBottom: "0px",
+    paddingLeft: "142px",
+    paddingTop: "69px",
+
+  },
+  bottomHs: {
+    marginTop: "0px",
+    marginBottom: "0px",
+    paddingLeft: "142px",
+    paddingTop: "22px",
+
+  },
 });
 function Login() {
   const classes = useStyle();
@@ -302,6 +326,9 @@ function Login() {
             <TextField className={classes.textField} value={password} onChange={handleChangePassword} label="password" helperText={helperDetails.helperPassword} />
           </div>
           <Button className={classes.loginButton} variant="contained" onClick={handleLogin}>login</Button>
+          <div className={classes.bottom}>
+            <h1 className={classes.bottomH}>LogIn Page</h1>
+          </div>
         </div>
       ) : (
         <div className={classes.card1}>
@@ -311,6 +338,9 @@ function Login() {
             <TextField className={classes.textField} value={userDetails.password} onChange={handlePassword} label="password" helperText={helperDetails.helperPassword} />
           </div>
           <Button className={classes.loginButton} onClick={handleSigin} variant="contained">signIn</Button>
+          <div className={classes.bottoms}>
+            <h1 className={classes.bottomHs}>signIn Page</h1>
+          </div>
         </div>
       )}
     </div>

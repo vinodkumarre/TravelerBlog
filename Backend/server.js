@@ -24,6 +24,7 @@ app.get('/blog', db.getBlogById);
 app.post('/blog', db.createBlog);
 app.put('/blog/:blogid', db.updateBlog);
 app.delete('/blog/:blogid', db.deleteBlog);
+app.put('/blog/:userid/:blogid', db.blogRating);
 app.listen(port,()=>{
     console.log(`server running at port ${port}`)
 });

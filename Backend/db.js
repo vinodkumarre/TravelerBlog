@@ -119,6 +119,20 @@ const deleteBlog = (request, response) => {
         response.status(200).send(`User deleted with id`)
     })
 }
+const blogRating = (request, response) => {
+    const id = request.params.blogid;
+    const userid = request.params.userid
+    pool.query(
+        'UPDATE blog SET ratting = $1 WHERE blogid = $2 AND userid = $3',
+        [request.body.ratting, id, userid],
+        (error) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).send(`User modified with ID: ${id}`)
+        }
+    )
+}
   
 module.exports = {
 getUsers,
@@ -131,4 +145,5 @@ getBlogById,
 createBlog,
 updateBlog,
 deleteBlog,
+blogRating,
 }

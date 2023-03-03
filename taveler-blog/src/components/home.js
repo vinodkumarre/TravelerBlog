@@ -66,6 +66,15 @@ const useStyle = makeStyles({
     overflow: "scroll",
     width: "250px",
   },
+  p: {
+    width: "250px",
+    height: "40px",
+    overflow: "scroll",
+  },
+  anchore: {
+    textDecoration: "none",
+    marginTop: "10% !important",
+  },
 });
 
 function Home() {
@@ -75,7 +84,16 @@ function Home() {
   const [fetchData, setFetchData] = useState();
   const reguestSucces = (lists) => {
     const list = lists && lists.filter((item) => item.userid === +prams.id);
-    setFetchData(list);
+    const sort = list.sort((a, b) => {
+      if (a.ratting > b.ratting) {
+        return -1;
+      }
+      if (a.ratting < b.ratting) {
+        return 1;
+      }
+      return 0;
+    });
+    setFetchData(sort);
   };
   useEffect(() => {
     ApiFetchCall("/blogs", "Get", reguestSucces);
@@ -90,6 +108,9 @@ function Home() {
     ApiFetchCall(`/blog/${y.blogid}`, "Delete", () => {
       ApiFetchCall("/blogs", "Get", reguestSucces);
     });
+  };
+  const viewHandler = (r) => {
+    navigate(`/Home/${r.userid}/ViewPage/${r.blogid}`);
   };
   return (
     <div className={classes.body}>
@@ -112,12 +133,21 @@ function Home() {
         {fetchData && fetchData.map((blog) => (
           <Card className={classes.card} key={blog.blogid}>
             <div className={classes.cardMedia}>
-              {blog.photo_upload.split(",").map((image) => (<img src={image} alt="tittle" style={{ width: "100%", height: "100%", objectFit: "cover" }} />))}
+              {blog.photo_upload.split(",").map((image) => (<img src={image} alt="tittle" style={{ width: "400px", height: "100%", objectFit: "cover" }} />))}
             </div>
-            <CardContent>
+            <CardContent onClick={() => viewHandler(blog)}>
               <Typography variant="h5" component="div">{blog.location.toUpperCase()}</Typography>
-              <Typography variant="body2" color="text.secondary">{blog.description}</Typography>
-              <a href={blog.sites_to_visit}>sites_to_visit</a>
+              <Typography sx={{
+                width: "220px",
+                height: "40px",
+                overflow: "scroll",
+
+              }}
+              >
+                {blog.description}
+
+              </Typography>
+              <a href={blog.sites_to_visit} className={classes.anchore}>sites_to_visit</a>
             </CardContent>
             <CardActions>
               <Button size="small" onClick={() => editHandler(blog)} className={classes.Button}>Edit</Button>
